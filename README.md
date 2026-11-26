@@ -1,3 +1,8 @@
+[![Build APK](https://github.com/Vanclab/modu-reader/actions/workflows/build.yml/badge.svg)](https://github.com/Vanclab/modu-reader/actions/workflows/build.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/Vanclab/modu-reader)](https://github.com/Vanclab/modu-reader/releases)
+[![minSdk](https://img.shields.io/badge/Android-5.0%2B-green.svg)](https://developer.android.com/about/versions/lollipop)
+
 # 墨读 · Android 本地阅读器
 
 一个纯本地书籍/漫画阅读 App：WebView 外壳 + 网页界面 + 原生桥接（文件选择、PDF 渲染、本地存储）。
