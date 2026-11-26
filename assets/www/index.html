@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>墨读</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ 书库 ============ -->
+<section id="lib" class="screen active">
+  <header class="topbar">
+    <div class="brand" onclick="toggleLibSwitch()">
+      <span id="brandText">书库</span>
+      <svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg>
+    </div>
+    <div class="actions">
+      <button class="icon-btn" onclick="togglePop('popSort')">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      </button>
+      <button class="icon-btn accent" onclick="startImport('local')">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- 排序菜单 -->
+  <div class="popover" id="popSort">
+    <div class="pop-item" onclick="setSort('time')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <span>按时间排序</span><i class="check" data-k="sort">✓</i>
+    </div>
+    <div class="pop-item" onclick="setSort('name')">
+      <svg viewBox="0 0 24 24"><path d="M5 18l4-12 4 12M6.5 14h5"/><path d="M16 6v12h4"/></svg>
+      <span>按名称排序</span><i class="check" data-k="sort"></i>
+    </div>
+    <div class="pop-item" onclick="setSort('author')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+      <span>按作者排序</span><i class="check" data-k="sort"></i>
+    </div>
+    <div class="pop-item" onclick="setSort('recent')">
+      <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 4v4h4"/></svg>
+      <span>按最近阅读排序</span><i class="check" data-k="sort"></i>
+    </div>
+    <div class="pop-divider"></div>
+    <div class="pop-item" onclick="setOrder('asc')">
+      <svg viewBox="0 0 24 24"><path d="M12 20V4M6 10l6-6 6 6"/></svg>
+      <span>升序</span><i class="check" data-k="order">✓</i>
+    </div>
+    <div class="pop-item" onclick="setOrder('desc')">
+      <svg viewBox="0 0 24 24"><path d="M12 4v16M6 14l6 6 6-6"/></svg>
+      <span>降序</span><i class="check" data-k="order">✓</i>
+    </div>
+  </div>
+
+  <div class="scroll" id="libScroll">
+    <div class="continue-card" id="continueCard" onclick="continueReading()"></div>
+
+    <div class="section-head">
+      <h2>系列书籍</h2>
+      <svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+    </div>
+    <div class="hrow" id="seriesRow"></div>
+
+    <div class="section-head">
+      <h2>单册书籍</h2>
+      <svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+    </div>
+    <div class="grid" id="bookGrid"></div>
+
+    <div class="empty" id="emptyHint" style="display:none">
+      <p>书架还是空的</p>
+      <button class="primary-btn" onclick="directImport('novel')">导入第一本书</button>
+    </div>
+    <div style="height:120px"></div>
+  </div>
+
+</section>
+
+  <!-- 底部导航 -->
+  <nav class="tabbar">
+    <button class="tab active" onclick="switchTab('lib',this)">
+      <svg viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M13 4h5.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H13z"/></svg>
+      <em>书库</em>
+    </button>
+    <button class="tab" onclick="switchTab('cat',this)">
+      <svg viewBox="0 0 24 24"><path d="M4 5h5v14H4z"/><path d="M11 5h5v14h-5z"/><path d="M18 6l3-.8L22.4 18l-3 .8z"/></svg>
+      <em>书架</em>
+    </button>
+    <button class="tab" onclick="switchTab('stat',this)">
+      <svg viewBox="0 0 24 24"><path d="M4 5h9l7 7-7 7H4z"/><circle cx="8.5" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
+      <em>标签</em>
+    </button>
+    <button class="tab" onclick="switchTab('set',this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/></svg>
+      <em>设置</em>
+    </button>
+    <button class="fab-search" onclick="openSearch()">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
+    </button>
+  </nav>
+  <!-- 多选操作条 -->
+  <nav class="selbar" id="selbar">
+    <button class="sel-act" onclick="selRename()">
+      <svg viewBox="0 0 24 24"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/></svg>
+      <em>重命名</em>
+    </button>
+    <button class="sel-act" id="selAddSeries" onclick="selSeriesToggle()">
+      <svg viewBox="0 0 24 24"><path d="M5 6h14v12H5z"/><path d="M8 6v12M16 6v12"/></svg>
+      <em id="selAddSeriesLabel">加入系列</em>
+    </button>
+    <button class="sel-act" onclick="selCover()">
+      <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 15l4-4 4 4 3-3 5 5"/></svg>
+      <em>改封面</em>
+    </button>
+    <button class="sel-act danger" onclick="selDelete()">
+      <svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"/></svg>
+      <em>删除</em>
+    </button>
+    <button class="fab-exit" onclick="exitSelection()">退出</button>
+  </nav>
+
+  <!-- 系列操作条 -->
+  <nav class="selbar selbar-series" id="selbarSeries">
+    <button class="sel-act" onclick="seriesRename()">
+      <svg viewBox="0 0 24 24"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/></svg>
+      <em>改系列名</em>
+    </button>
+    <button class="sel-act" onclick="seriesCover()">
+      <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 15l4-4 4 4 3-3 5 5"/></svg>
+      <em>系列封面</em>
+    </button>
+    <button class="sel-act danger" onclick="seriesDissolve()">
+      <svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"/></svg>
+      <em>解散系列</em>
+    </button>
+    <button class="fab-exit" onclick="exitSelection()">退出</button>
+  </nav>
+
+
+<!-- ============ 分类 / 统计 / 设置 ============ -->
+<section id="cat" class="screen">
+  <header class="topbar"><div class="brand"><span>书架</span></div></header>
+  <div class="scroll" id="catBody"></div>
+</section>
+
+<section id="stat" class="screen">
+  <header class="topbar"><div class="brand"><span>标签</span></div></header>
+  <div class="scroll" id="statBody"></div>
+</section>
+
+<section id="set" class="screen">
+  <header class="topbar"><div class="brand"><span>设置</span></div></header>
+  <div class="scroll" id="setBody"></div>
+</section>
+
+<!-- ============ 阅读器 ============ -->
+<section id="reader" class="screen reader">
+  <div class="reader-top" id="readerTop">
+    <button class="rbtn" onclick="closeReader()">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="r-title" id="rTitle">书名</div>
+    <button class="rbtn" onclick="openToc()">
+      <svg viewBox="0 0 24 24"><path d="M4 6h13M4 12h13M4 18h13"/><circle cx="20" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="20" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="20" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
+    </button>
+    <button class="rbtn" onclick="openReaderSettings()">
+      <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.8" fill="currentColor" stroke="none"/></svg>
+    </button>
+  </div>
+  <div class="reader-body" id="readerBody"></div>
+  <div class="hud" id="hud">
+    <span id="hudChap">第1章/共1章</span>
+    <span id="hudPct" class="hud-mid">0.00%</span>
+    <span id="hudTime">00:00</span>
+  </div>
+  <div class="reader-bar" id="readerBar">
+    <span id="rProgress">0%</span>
+    <input type="range" id="rSlider" min="0" max="100" value="0" oninput="seekReader(this.value)">
+  </div>
+</section>
+
+<!-- 图片查看器 -->
+<div id="imgViewer" onclick="closeImageViewer()">
+  <img id="imgViewerImg" alt="">
+</div>
+
+<!-- ============ 阅读设置 ============ -->
+<div class="sheet rsheet" id="sheetReader">
+  <div class="sheet-head">
+    <b>阅读设置</b>
+    <button class="xbtn" onclick="closeReaderSettings()">✕</button>
+  </div>
+  <div class="rs-body" id="rsBody"></div>
+</div>
+
+<!-- ============ 系列书籍列表 ============ -->
+<div class="sheet" id="sheetSeries">
+  <div class="sheet-head">
+    <b id="seriesTitle">系列</b>
+    <button class="xbtn" onclick="closeAll()">✕</button>
+  </div>
+  <div class="series-list" id="seriesList"></div>
+</div>
+
+<!-- ============ 书籍长按菜单 ============ -->
+<div class="sheet" id="sheetBook">
+  <div class="sheet-head">
+    <b id="bmTitle">书名</b>
+    <button class="xbtn" onclick="closeAll()">✕</button>
+  </div>
+  <div class="bm-list">
+    <button class="bm-item" onclick="renameBook()">
+      <svg viewBox="0 0 24 24"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/></svg>
+      <span>重命名</span>
+    </button>
+    <button class="bm-item" onclick="seriesBook()">
+      <svg viewBox="0 0 24 24"><path d="M5 6h14v12H5z"/><path d="M8 6v12M16 6v12"/></svg>
+      <span id="bmSeriesLabel">加入系列</span>
+    </button>
+    <button class="bm-item" onclick="changeCover()">
+      <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 15l4-4 4 4 3-3 5 5"/></svg>
+      <span>修改封面</span>
+    </button>
+    <button class="bm-item danger" onclick="askDelete()">
+      <svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"/></svg>
+      <span>删除书籍</span>
+    </button>
+  </div>
+</div>
+
+<!-- 删除确认 -->
+<div class="dialog" id="dlgConfirm">
+  <h3>删除书籍</h3>
+  <p id="cfText">确定要从书架移除这本书吗？</p>
+  <div class="dlg-btns">
+    <button class="ghost-btn" onclick="closeAll()">取消</button>
+    <button class="primary-btn danger" onclick="confirmDelete()">删除</button>
+  </div>
+</div>
+
+<!-- ============ 目录 ============ -->
+<div class="toc-mask" id="tocMask" onclick="closeToc()"></div>
+<div class="toc-sheet" id="tocSheet">
+  <div class="toc-head">
+    <b>目录</b><span id="tocCount"></span>
+    <button class="xbtn" onclick="closeToc()">✕</button>
+  </div>
+  <div class="toc-list" id="tocList"></div>
+</div>
+
+<!-- ============ 导入面板 ============ -->
+<div class="mask" id="mask" onclick="closeAll()"></div>
+
+<div class="sheet" id="sheetImport">
+  <div class="sheet-head">
+    <b>导入书籍</b>
+    <button class="xbtn" onclick="closeAll()">✕</button>
+  </div>
+  <div class="sheet-grid">
+    <button class="tile" onclick="pickSeries()">
+      <svg viewBox="0 0 24 24"><path d="M5 6h14v12H5z"/><path d="M8 6v12M16 6v12"/></svg>
+      <div><b>添加到系列</b><span id="tileSeries">未选择</span></div>
+    </button>
+    <button class="tile" onclick="pickTag()">
+      <svg viewBox="0 0 24 24"><path d="M4 5h9l7 7-7 7H4z"/><circle cx="8.5" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+      <div><b>加入标签</b><span id="tileTag">未选择</span></div>
+    </button>
+    <button class="tile" onclick="doImport('novel')">
+      <svg viewBox="0 0 24 24"><path d="M7 4h10v16l-5-3-5 3z"/></svg>
+      <div><b>导入小说书籍</b></div>
+    </button>
+    <button class="tile" onclick="doImport('comic')">
+      <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 15l4-4 4 4 3-3 5 5"/></svg>
+      <div><b>导入漫画书籍</b></div>
+    </button>
+  </div>
+  <button class="link-btn" onclick="showFormats()">支持的书籍格式</button>
+</div>
+
+<!-- 格式说明对话框 -->
+<div class="dialog" id="dlgFormats">
+  <h3>支持的书籍格式</h3>
+  <p><b>小说：</b>EPUB、MOBI、AZW3、AZW4、TXT、PDF、Markdown（.md / .markdown）</p>
+  <p><b>漫画：</b>EPUB、MOBI、AZW3、AZW4、CBZ、ZIP、7Z、RAR、CBR、PDF</p>
+  <p class="dim">当前版本可解析：EPUB、TXT、Markdown、PDF、CBZ、ZIP。<br>MOBI / AZW3 / AZW4 / RAR / 7Z 可入库但暂不能打开。</p>
+  <div class="dlg-btns">
+    <button class="ghost-btn" onclick="closeAll()">取消</button>
+    <button class="primary-btn" onclick="closeAll()">确定</button>
+  </div>
+</div>
+
+<!-- 加入系列对话框 -->
+<div class="dialog" id="dlgSeries">
+  <h3>加入系列</h3>
+  <div class="s-chips" id="seriesChips"></div>
+  <input id="seriesInput" class="dlg-input" type="text" placeholder="输入新系列名，留空则移出系列">
+  <div class="dlg-btns">
+    <button class="ghost-btn" onclick="closeAll()">取消</button>
+    <button class="primary-btn" onclick="confirmSeries()">确定</button>
+  </div>
+</div>
+
+<!-- 输入对话框 -->
+<div class="dialog" id="dlgInput">
+  <h3 id="inpTitle">输入</h3>
+  <input id="inpField" class="dlg-input" type="text">
+  <div class="dlg-btns">
+    <button class="ghost-btn" onclick="closeAll();inputCb=null">取消</button>
+    <button class="primary-btn" onclick="confirmInput()">确定</button>
+  </div>
+</div>
+
+<!-- 搜索 -->
+<div class="search-layer" id="searchLayer">
+  <div class="search-bar">
+    <input id="searchInput" placeholder="搜索书名、作者" oninput="runSearch(this.value)">
+    <button class="xbtn" onclick="closeSearch()">✕</button>
+  </div>
+  <div class="search-results" id="searchResults"></div>
+</div>
+
+<script src="jszip.min.js"></script>
+<script src="app.js"></script>
+<script src="reader.js"></script>
+</body>
+</html>

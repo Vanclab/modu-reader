@@ -1,0 +1,40 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装构建工具
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+            openjdk-17-jdk-headless aapt apksigner zipalign dalvik-exchange android-sdk-platform-23
+
+      - name: 生成临时签名密钥
+        run: |
+          keytool -genkeypair -v -keystore ci.keystore -storepass androiddebug -keypass androiddebug \
+            -alias ci -keyalg RSA -keysize 2048 -validity 3650 \
+            -dname "CN=CI Build, O=Modu, C=CN"
+
+      - name: 构建
+        env:
+          KS: ci.keystore
+          KS_PASS: androiddebug
+        run: |
+          chmod +x build.sh
+          ./build.sh
+
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: modu-apk
+          path: build/app.apk
