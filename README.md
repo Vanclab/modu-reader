@@ -71,3 +71,8 @@ cd apk-reader
 - 编译目标 API 23，因此没有自适应图标（adaptive-icon），也没有 AndroidX / Material 组件
 - MOBI / AZW3 / AZW4 / RAR / 7Z 未实现解析
 - 左右翻页模式的跟手拖动仅对文字生效，漫画/PDF 为松手翻页
+
+## 协议
+
+本项目基于 [MIT License](LICENSE) 开源。
+图标为项目自绘图形，字体使用 Noto Serif CJK（SIL Open Font License）。
